@@ -5,41 +5,71 @@ const cityInput = document.getElementById("cityInput");
 const currentWeatherEl = document.getElementById("currentWeather");
 const forecastEl = document.getElementById("forecast");
 const errorEl = document.getElementById("error");
+const loadingEl = document.getElementById("loading");
 
-form.addEventListener("submit", async (e) => {
+/* --------------------
+   Event Listeners
+-------------------- */
+
+form.addEventListener("submit", (e) => {
   e.preventDefault();
-  loadWeather(cityInput.value);
+
+  const city = cityInput.value.trim();
+
+  // 🚫 Prevent empty search
+  if (!city) {
+    showError("Please enter a city name.");
+    return;
+  }
+
+  loadWeather(city);
 });
 
-document.querySelectorAll(".unit-toggle button").forEach(btn => {
+document.querySelectorAll(".unit-toggle button").forEach((btn) => {
   btn.addEventListener("click", () => {
     currentUnit = btn.dataset.unit;
-    if (cityInput.value) loadWeather(cityInput.value);
+
+    if (cityInput.value.trim()) {
+      loadWeather(cityInput.value.trim());
+    }
   });
 });
 
+/* --------------------
+   Core Logic
+-------------------- */
+
 async function loadWeather(city) {
   try {
-    errorEl.textContent = "";
-    currentWeatherEl.classList.add("hidden");
+    clearError();
+    showLoading();
 
-    const current = await fetchCurrentWeather(city, currentUnit);
-    const forecast = await fetchForecast(city, currentUnit);
+    const [current, forecast] = await Promise.all([
+      fetchCurrentWeather(city, currentUnit),
+      fetchForecast(city, currentUnit)
+    ]);
 
     renderCurrent(current);
     renderForecast(forecast.list);
   } catch (err) {
-    errorEl.textContent = err.message;
+    showError(err.message || "Unable to fetch weather data.");
+  } finally {
+    hideLoading();
   }
 }
+
+/* --------------------
+   Render Functions
+-------------------- */
 
 function renderCurrent(data) {
   currentWeatherEl.innerHTML = `
     <h2>${data.name}</h2>
-    <p>${Math.round(data.main.temp)}°</p>
-    <p>${data.weather[0].description}</p>
-    <p>💧 ${data.main.humidity}% | 💨 ${data.wind.speed}</p>
+    <p class="temp">${Math.round(data.main.temp)}°</p>
+    <p class="condition">${data.weather[0].description}</p>
+    <p class="meta">💧 ${data.main.humidity}% | 💨 ${data.wind.speed}</p>
   `;
+
   currentWeatherEl.classList.remove("hidden");
 }
 
@@ -48,32 +78,57 @@ function renderForecast(list) {
 
   const dailyMap = {};
 
-  list.forEach(item => {
+  list.forEach((item) => {
     const date = item.dt_txt.split(" ")[0];
 
     if (!dailyMap[date]) {
       dailyMap[date] = {
         temps: [],
-        icon: item.weather[0].icon,
-        date: item.dt_txt
+        icon: item.weather[0].icon
       };
     }
 
     dailyMap[date].temps.push(item.main.temp);
   });
 
-  Object.keys(dailyMap).slice(0, 5).forEach(date => {
-    const day = dailyMap[date];
-    const min = Math.min(...day.temps);
-    const max = Math.max(...day.temps);
+  Object.keys(dailyMap)
+    .slice(0, 5)
+    .forEach((date) => {
+      const temps = dailyMap[date].temps;
+      const min = Math.min(...temps);
+      const max = Math.max(...temps);
 
-    forecastEl.innerHTML += `
-      <div class="card">
-        <p>${formatDate(date)}</p>
-        <img src="https://openweathermap.org/img/wn/${day.icon}.png" />
-        <p>${Math.round(min)}° / ${Math.round(max)}°</p>
-      </div>
-    `;
-  });
+      forecastEl.innerHTML += `
+        <div class="card">
+          <p>${formatDate(date)}</p>
+          <img 
+            src="https://openweathermap.org/img/wn/${dailyMap[date].icon}.png" 
+            alt="weather icon"
+          />
+          <p>${Math.round(min)}° / ${Math.round(max)}°</p>
+        </div>
+      `;
+    });
 }
 
+/* --------------------
+   UI Helpers
+-------------------- */
+
+function showLoading() {
+  loadingEl.classList.remove("hidden");
+  currentWeatherEl.classList.add("hidden");
+  forecastEl.innerHTML = "";
+}
+
+function hideLoading() {
+  loadingEl.classList.add("hidden");
+}
+
+function showError(message) {
+  errorEl.textContent = message;
+}
+
+function clearError() {
+  errorEl.textContent = "";
+}
