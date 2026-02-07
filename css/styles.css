@@ -130,3 +130,22 @@ input {
   border-radius: 12px;
   font-size: 1rem;
 }
+
+.install-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 18px;
+  border-radius: 30px;
+  border: none;
+  background: rgba(56, 189, 248, 0.9);
+  color: #fff;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+}
+
+.hidden {
+  display: none;
+}
