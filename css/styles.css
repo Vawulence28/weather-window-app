@@ -1,0 +1,132 @@
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+
+  /* Brilliant but controlled */
+  background:
+    radial-gradient(
+      1200px circle at top left,
+      rgba(120, 180, 255, 0.85),
+      transparent 55%
+    ),
+    radial-gradient(
+      900px circle at bottom right,
+      rgba(255, 180, 120, 0.75),
+      transparent 60%
+    ),
+    linear-gradient(
+      180deg,
+      #1a2a3a,
+      #0f172a
+    );
+
+  background-attachment: fixed;
+  color: var(--text-primary);
+  transition: background 1s ease;
+}
+
+body.weather-clear {
+  background:
+    radial-gradient(
+      1000px circle at top,
+      rgba(255, 200, 100, 0.9),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #4facfe, #00f2fe);
+}
+
+body.weather-rain,
+body.weather-thunderstorm {
+  background:
+    radial-gradient(
+      900px circle at top,
+      rgba(90, 120, 200, 0.85),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #0f2027, #203a43, #2c5364);
+}
+
+body.weather-clouds {
+  background:
+    radial-gradient(
+      1000px circle at top,
+      rgba(180, 180, 190, 0.8),
+      transparent 65%
+    ),
+    linear-gradient(180deg, #485563, #29323c);
+}
+
+body.weather-snow {
+  background:
+    radial-gradient(
+      1000px circle at top,
+      rgba(220, 240, 255, 0.9),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #83a4d4, #b6fbff);
+}
+
+.app {
+  width: 100%;
+  max-width: 420px;
+
+  margin: 2vh auto;
+  padding: 1.25rem;
+
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  box-shadow:
+    0 25px 50px rgba(0, 0, 0, 0.35),
+    inset 0 0 25px rgba(255, 255, 255, 0.12);
+}
+
+.card {
+  padding: 0.9rem;
+  border-radius: 16px;
+}
+
+.forecast-grid {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+@media (max-width: 480px) {
+  .forecast-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+h1 {
+  font-size: clamp(1.3rem, 4vw, 1.6rem);
+}
+
+h2 {
+  font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+}
+
+p {
+  font-size: clamp(0.85rem, 3vw, 0.95rem);
+  color: var(--text-secondary);
+}
+
+:root {
+  --text-primary: rgba(20, 24, 32, 0.95);
+  --text-secondary: rgba(20, 24, 32, 0.7);
+  --text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+h1, h2, p {
+  text-shadow: var(--text-shadow);
+}
+
+button,
+input {
+  min-height: 44px;
+  border-radius: 12px;
+  font-size: 1rem;
+}
